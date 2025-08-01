@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17.5-alpine
+    container_name: postgres_db
+    platform: linux/amd64
+    environment:
+      POSTGRES_USER: dbt
+      POSTGRES_PASSWORD: dbt
+      POSTGRES_DB: dbt
+    ports:
+      - "5432:5432"
+    networks:
+      - dbt_network
+
+  dbt:
+    image: ghcr.io/dbt-labs/dbt-postgres:1.9.0
+    container_name: dbt_env
+    platform: linux/amd64
+    volumes:
+      - .:/usr/app
+      - ~/.dbt:/root/.dbt:ro
+    working_dir: /usr/app
+    entrypoint: ["tail","-f","/dev/null"]
+    depends_on:
+      - postgres
+    networks:
+      - dbt_network
+
+volumes:
+  pgdata:
+
+networks:
+  dbt_network:
+    driver: bridge
