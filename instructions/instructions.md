@@ -4,11 +4,11 @@
 The goal of this technical test is to showcase an end-to-end ELT pipeline from a
 data source to any data warehouse using Python, SQL, and dbt with data models
 to answer the following questions:
-- Top 10 stores by transacted amount
-- Top 10 products sold
+- Average time for a store to perform its first 5 transactions
 - Average transacted amount per store typology and country
 - Percentage of transactions per device type
-- Average time for a store to perform its first 5 transactions
+- Top 10 products sold
+- Top 10 stores by transacted amount
 
 ## Deliverables
 Please share the source code, data model design, and SQL queries that
