@@ -1,2 +1,16 @@
 instructions/data/*
 !instructions/data/.gitkeep
+
+.DS_Store
+.vscode
+
+# dbt specific files
+.user.yml
+
+# DBT Stuffs
+logs
+dbt_packages
+target
+/dbt_project/logs
+/dbt_project/target
+/dbt_project/dbt_packages

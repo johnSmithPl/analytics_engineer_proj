@@ -1,0 +1,12 @@
+analytics_engineer_proj:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: postgres_db
+      user: dbt
+      password: dbt
+      port: 5432
+      dbname: dbt
+      schema: dbt_prod
+      threads: 4

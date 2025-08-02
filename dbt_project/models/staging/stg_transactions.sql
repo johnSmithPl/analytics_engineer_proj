@@ -1,0 +1,24 @@
+with source as (
+
+    select * from {{ source('postgres', 'transactions') }}
+
+),
+
+transactions as (
+
+    select
+        trim(id) as transaction_id,
+        trim(device_id) as device_id,
+        trim(product_name) as product_name,
+        trim(product_sku) as product_sku,
+        trim(category_name) as category_name,
+        replace(trim(amount), ',', '.')::numeric as amount,
+        trim(status) as status,
+        to_timestamp(created_at, 'YYYY-MM-DD HH24:MI:SS.MS') as created_at,
+        to_timestamp(happened_at, 'YYYY-MM-DD HH24:MI:SS.MS') as happened_at
+
+    from source
+
+)
+
+select * from transactions
