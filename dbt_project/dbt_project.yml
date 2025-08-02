@@ -20,5 +20,7 @@ models:
   analytics_engineer_proj:
     staging:
       +materialized: view
+      +schema: staging
     intermediate:
       +materialized: table
+      +schema: intermediate

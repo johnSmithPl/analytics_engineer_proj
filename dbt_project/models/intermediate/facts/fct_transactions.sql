@@ -1,3 +1,6 @@
+
+{{ config(tags=["intermediate"]) }}
+
 with transactions as (
 
     select * from {{ ref('stg_transactions') }}
