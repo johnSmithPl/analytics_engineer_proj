@@ -8,5 +8,5 @@ analytics_engineer_proj:
       password: dbt
       port: 5432
       dbname: dbt
-      schema: dbt_prod
+      schema: dev
       threads: 4
