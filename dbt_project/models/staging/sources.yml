@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: postgres
+    database: dbt
+    schema: raw
+    tables:
+      - name: stores
+      - name: devices
+      - name: transactions
