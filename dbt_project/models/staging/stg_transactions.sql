@@ -17,8 +17,8 @@ transactions as (
         trim(category_name) as category_name,
         replace(trim(amount), ',', '.')::numeric as amount,
         trim(status) as status,
-        to_timestamp(created_at, 'YYYY-MM-DD HH24:MI:SS.MS') as created_at,
-        to_timestamp(happened_at, 'YYYY-MM-DD HH24:MI:SS.MS') as happened_at
+        to_timestamp(created_at, 'MM/DD/YYYY HH24:MI:SS') as created_at,
+        to_timestamp(happened_at, 'MM/DD/YYYY HH24:MI:SS') as happened_at
 
     from source
 

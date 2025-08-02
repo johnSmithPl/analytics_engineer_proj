@@ -4,6 +4,7 @@
 - platform: linux/amd64 in dockercompose, explain
 - docker exec -it dbt_env /bin/bash
 - i did not post data to not leak any personal information, thats why its git ignored and you have to put it there
+- picked most fresh and stable versions of postgres and dbt images source
 
 
 to do:
@@ -25,3 +26,6 @@ Port: 5432
 Database: dbt
 Username: dbt
 Password: dbt
+
+dbt run --select tag:stage
+dbt run --select tag:intermediate
