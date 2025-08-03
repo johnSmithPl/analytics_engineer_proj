@@ -5,7 +5,8 @@ with source as (
         product_name,
         count(*) as times_sold
     from {{ ref('fct_transactions') }}
-    group by 1
+    where status = 'accepted'
+    group by product_name
 ),
 
 ranked as (
@@ -21,3 +22,4 @@ select
     times_sold
 from ranked
 where ranking <= 10
+-- note: this can produce ties, so it may return more than 10 products

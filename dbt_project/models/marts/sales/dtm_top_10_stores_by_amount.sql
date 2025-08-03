@@ -7,7 +7,8 @@ with source as (
     from {{ ref('fct_transactions') }} fct
     join {{ ref('dim_devices') }} dd 
         on fct.device_id = dd.device_id
-    group by 1
+    where fct.status = 'accepted'
+    group by dd.store_id
 ),
 
 ranked as (
@@ -27,3 +28,4 @@ select
     total_amount
 from ranked
 where ranking <= 10
+-- note: this can produce ties, so it may return more than 10 products if the revenue is the same

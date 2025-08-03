@@ -11,7 +11,7 @@ with transactions as (
     from {{ ref('stg_transactions') }}
 
     {% if is_incremental() %}
-    where created_at > (select max(created_at) from {{ this }})
+    where happened_at > (select max(happened_at) from {{ this }})
     {% endif %}
 )
 
