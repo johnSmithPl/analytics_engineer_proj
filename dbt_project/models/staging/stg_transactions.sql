@@ -1,14 +1,10 @@
-
 {{ config(tags=["staging"]) }}
 
 with source as (
-
     select * from {{ source('postgres', 'transactions') }}
-
 ),
 
 transactions as (
-
     select
         trim(id)::numeric as transaction_id,
         trim(device_id)::numeric as device_id,
@@ -19,9 +15,7 @@ transactions as (
         trim(status) as status,
         to_timestamp(created_at, 'MM/DD/YYYY HH24:MI:SS') as created_at,
         to_timestamp(happened_at, 'MM/DD/YYYY HH24:MI:SS') as happened_at
-
     from source
-
 )
 
 select * from transactions

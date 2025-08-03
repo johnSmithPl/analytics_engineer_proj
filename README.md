@@ -27,5 +27,9 @@ Database: dbt
 Username: dbt
 Password: dbt
 
+just dbt run to run all
 dbt run --select tag:stage
 dbt run --select tag:intermediate
+
+TODO: data model design explanation
+TODO: Your design and implementation should scale for larger volumes of data (millions to billions of records) -> explanation of incremental
