@@ -1,5 +1,7 @@
 # Analytics Engineer Project
 
+## Overview
+
 This project demonstrates a comprehensive data engineering and analytics workflow, from raw data ingestion to the creation of insightful
 data marts. It uses dbt to transform and model data, and Docker-compose to create a reproducible environment.
 
@@ -22,6 +24,7 @@ The project is organized into the following directories:
 ## Getting Started
 
 ### Prerequisites
+
 - Docker
 
 The docker-compose file is setup for `linux/amd64`, it works fine with MacOS M-series chip. The platform architecture is controled through 
@@ -76,7 +79,7 @@ It was not tested on other platforms, like windows.
 
     To run the tests:
     ```
-    dbt run test
+    dbt test
     ```
 
     To run both the project and tests:
@@ -86,4 +89,92 @@ It was not tested on other platforms, like windows.
 
 
 5.  **Docker images:**
+
     The Docker images in the `docker-compose.yml` file are chosen to be the most recent stable ligt-weight versions.
+
+## Architecture
+
+The project follows a layered data architecture, which is a best practice in data warehousing. This approach ensures that data flows through a series of well-defined stages, from raw data ingestion to the final data marts. Each layer has a specific purpose, and this separation of concerns makes the data pipeline more robust and easier to manage.
+
+```
+┌───────────────────┐
+│   Raw Data (CSV)  │
+└───────────────────┘
+        │
+        ▼
+┌───────────────────┐
+│ Staging Layer     │
+└───────────────────┘
+        │
+        ▼
+┌───────────────────┐
+│ Intermediate Layer│
+└───────────────────┘
+        │
+        ▼
+┌───────────────────┐
+│ Data Mart Layer   │
+└───────────────────┘
+```
+
+### 1. Staging Layer
+
+The staging layer is the first layer of the data model. It contains the raw data from the source systems, with minimal transformations. The purpose of the staging layer is to provide a clean and consistent view of the raw data, and to serve as a single source of truth for the rest of the data model.
+
+The staging models perform the following transformations:
+
+-   **Data type casting:** All columns are cast to their correct data types.
+-   **Basic cleaning:** Leading and trailing whitespace is removed from all string columns.
+-   **Timestamp conversion:** The `created_at` and `happened_at` columns are converted to timestamps.
+
+### 2. Intermediate Layer
+
+The intermediate layer is the second layer of the data model. It contains the transformed and enriched data from the staging layer. The purpose of the intermediate layer is to create a set of reusable and well-defined data models that can be used to build the final data marts.
+
+The intermediate layer consists of the following models:
+
+-   `dim_devices`: A dimension table that contains information about the devices.
+-   `dim_stores`: A dimension table that contains information about the stores.
+-   `fct_transactions`: A fact table that contains the transactions. This table is materialized as an incremental model, which means that only new or updated records are processed on each run. This is a key feature for scalability, as it avoids full table scans on large datasets.
+
+### 3. Data Mart Layer
+
+The data mart layer is the final layer of the data model. It contains the aggregated and summarized data from the intermediate layer, and is designed to answer specific business questions.
+
+The data mart layer consists of the following models:
+
+-   `dtm_avg_transacted_amount_by_typology_country`: Calculates the average transacted amount by store typology and country.
+-   `dtm_avg_time_to_5_transactions`: Calculates the average time it takes for a store to have its first 5 transactions.
+-   `dtm_overall_avg_time_to_5_transactions`: Calculates the overall average time it takes for a store to have its first 5 transactions.
+        Instructions were a bit ambiguous about granurality of result for `dtm_avg_time_to_5_transactions`, then this one just just in case for overall summary. As it was very easy to build.
+-   `dtm_percentage_transactions_by_device_type`: Calculates the percentage of transactions by device type.
+-   `dtm_top_10_products_sold`: Calculates the top 10 products sold.
+-   `dtm_top_10_stores_by_amount`: Calculates the top 10 stores by transacted amount.
+
+## Scalability
+
+The data model is designed to be scalable for larger volumes of data. The use of incremental models in the intermediate layer is a key feature for scalability, as it avoids full table scans on large datasets. The models in data mart layer were written in a way that should be efficient for big datasets.
+
+In a production environment, the following additional steps could be taken to improve scalability:
+TODO: describe
+
+## Data Loading Strategy
+
+The initial data is loaded into the PostgreSQL database using a standard `init.sql` script placed in the `/docker-entrypoint-initdb.d` directory. This is a conventional and efficient method for initializing a database with a known dataset in a development or self-contained environment.
+
+For a production system, a more robust data loading mechanism would be implemented, which would decouple the database startup from the data loading process, ensuring the database can start independently and providing better error handling and logging if the data ingestion were to fail.
+
+## Database viewver
+
+If you'd like to view the results you can achieve it with configuruing a db connection in db viewer tool of preference. For example DBeaver.
+Use following details:
+
+-   **Host:** localhost
+-   **Port:** 5432
+-   **Database:** dbt
+-   **Username:** dbt
+-   **Password:** dbt
+
+## Feedback
+
+Feedback is greatly appreciated. I aimed to complete the assignment to the best of my ability within the given time frame and welcome any suggestions for improvement.
