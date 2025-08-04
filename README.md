@@ -42,7 +42,17 @@ It was not tested on other platforms, like windows.
     cd analytics_engineer_proj
     ```
 
-2.  **Run the Docker environment:**
+2.  **Place prepared .csv files in the data folder:**
+    Download the shared .csv files and place them in the `data` folder. If you prefere, you can also prepare them yourself. 
+    Following instructions in the [Project Structure](#project-structure) section.
+
+    ```
+    instructions/data/devices.csv
+    instructions/data/stores.csv
+    instructions/data/transactions.csv
+    ```
+
+3.  **Run the Docker environment:**
 
     ```bash
     docker-compose up -d
@@ -50,7 +60,7 @@ It was not tested on other platforms, like windows.
 
     This will start a PostgreSQL database and a dbt environment.
 
-3.  **Run the dbt models:**
+4.  **Run the dbt models:**
 
     ```bash
     docker exec -it dbt_env /bin/bash
@@ -64,3 +74,16 @@ It was not tested on other platforms, like windows.
     dbt run --select tag:sales_mart
     ```
 
+    To run the tests:
+    ```
+    dbt run test
+    ```
+
+    To run both the project and tests:
+    ```
+    dbt build
+    ```
+
+
+5.  **Docker images:**
+    The Docker images in the `docker-compose.yml` file are chosen to be the most recent stable ligt-weight versions.
