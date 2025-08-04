@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: stg_devices
+    columns:
+      - name: device_id
+        tests:
+          - unique
+          - not_null
+      - name: store_id
+        tests:
+          - relationships:
+              to: ref('stg_stores')
+              field: store_id
+
+  - name: stg_stores
+    columns:
+      - name: store_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_transactions
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['accepted', 'refused', 'cancelled']
+      - name: device_id
+        tests:
+          - relationships:
+              to: ref('stg_devices')
+              field: device_id

@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: dim_devices
+    columns:
+      - name: device_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_stores
+    columns:
+      - name: store_id
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_transactions
+    columns:
+      - name: transaction_id
+        tests:
+          - unique
+          - not_null
