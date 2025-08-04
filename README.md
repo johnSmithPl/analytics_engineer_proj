@@ -27,6 +27,7 @@ Database: dbt
 Username: dbt
 Password: dbt
 
+docker exec -it dbt_env /bin/bash
 just dbt run to run all
 dbt run --select tag:stage
 dbt run --select tag:intermediate

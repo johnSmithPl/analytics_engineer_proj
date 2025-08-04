@@ -34,7 +34,6 @@ store_times as (
     group by store_id
 )
 
-
 select
     store_id,
     fifth_transaction_at - first_transaction_at as time_to_5th_transaction

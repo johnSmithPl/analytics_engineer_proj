@@ -16,3 +16,6 @@ with transactions as (
 )
 
 select * from transactions
+
+-- note: I could have added statement: where fct.status = 'accepted' to optimazie performance
+-- but loosing information about rejected transactions could be problematic for future business questions
