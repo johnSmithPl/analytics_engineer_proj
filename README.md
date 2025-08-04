@@ -12,8 +12,8 @@ The project is organized into the following directories:
 - `dbt_project/`: Contains the dbt project, including models, macros, and configuration.
 - `postgres_init/`: Contains the initial data and the SQL script to load it into the PostgreSQL database.
 - `instructions/`: Contains original instructions for take home assigment and git ingored folder data.
-    Data was exported as cvs files from shared .xlsx files. They were just exported as they were, without any modifications.
-    Delimiter was set up to ";" to ommit issues with file structure. I think it's good enough solution for take home test
+    Data was exported as CSV files from shared .xlsx files. They were just exported as they were, without any modifications.
+    Delimiter was set to ";" to omit issues with file structure. I think it's a good enough solution for a take-home test
     with initial data. 
     
     These are the needed files:
@@ -46,8 +46,8 @@ It was not tested on other platforms, like windows.
     ```
 
 2.  **Place prepared .csv files in the data folder:**
-    Download the shared .csv files and place them in the `data` folder. If you prefere, you can also prepare them yourself. 
-    Following instructions in the [Project Structure](#project-structure) section.
+    Download the shared .csv files and place them in the `data` folder. If you prefer, you can also prepare them yourself, 
+    following instructions in the [Project Structure](#project-structure) section.
 
     ```
     instructions/data/devices.csv
@@ -90,7 +90,7 @@ It was not tested on other platforms, like windows.
 
 5.  **Docker images:**
 
-    The Docker images in the `docker-compose.yml` file are chosen to be the most recent stable ligt-weight versions.
+    The Docker images in the `docker-compose.yml` file are chosen to be the most recent stable lightweight versions.
 
 ## Architecture
 
@@ -146,17 +146,20 @@ The data mart layer consists of the following models:
 -   `dtm_avg_transacted_amount_by_typology_country`: Calculates the average transacted amount by store typology and country.
 -   `dtm_avg_time_to_5_transactions`: Calculates the average time it takes for a store to have its first 5 transactions.
 -   `dtm_overall_avg_time_to_5_transactions`: Calculates the overall average time it takes for a store to have its first 5 transactions.
-        Instructions were a bit ambiguous about granurality of result for `dtm_avg_time_to_5_transactions`, then this one just just in case for overall summary. As it was very easy to build.
+        Instructions were a bit ambiguous about granularity of result for `dtm_avg_time_to_5_transactions`, so this one is included just in case for overall summary. As it was very easy to build.
 -   `dtm_percentage_transactions_by_device_type`: Calculates the percentage of transactions by device type.
 -   `dtm_top_10_products_sold`: Calculates the top 10 products sold.
 -   `dtm_top_10_stores_by_amount`: Calculates the top 10 stores by transacted amount.
 
-## Scalability
+## Scalability and performance
 
-The data model is designed to be scalable for larger volumes of data. The use of incremental models in the intermediate layer is a key feature for scalability, as it avoids full table scans on large datasets. The models in data mart layer were written in a way that should be efficient for big datasets.
+### As implemented:
+The data model leverages incremental models in the intermediate layer (e.g., fct_transactions). Each dbt run processes only new or changed rows and avoids full-table scans. In the datamart layer, models use efficient SQL patterns, like CTEs with early filtering, pre-aggregation before joins, and only necessary columns to minimize data movement and keep queries performant on growing datasets.
 
-In a production environment, the following additional steps could be taken to improve scalability:
-TODO: describe
+### Future considerations:
+For the production setup, this could be improved further. However, it would heavily depend on database/warehouse technology. For PostgreSQL (as used here), this would involve indexing strategies on frequently queried columns, partitioning large tables (e.g., fct_transactions), etc. For analytical databases like Snowflake, it could mean manually defining clustering keys or relying on automatic clustering and micropartitioning. Solutions like materialized views, etc., could also be considered.
+
+On the other hand, extremely beneficial could be well-designed orchestration with tools like Airflow.
 
 ## Data Loading Strategy
 
@@ -164,10 +167,10 @@ The initial data is loaded into the PostgreSQL database using a standard `init.s
 
 For a production system, a more robust data loading mechanism would be implemented, which would decouple the database startup from the data loading process, ensuring the database can start independently and providing better error handling and logging if the data ingestion were to fail.
 
-## Database viewver
+## Database viewer
 
-If you'd like to view the results you can achieve it with configuruing a db connection in db viewer tool of preference. For example DBeaver.
-Use following details:
+If you'd like to view the results, you can do so by configuring a DB connection in your database viewer tool of preference. For example, DBeaver.
+Use the following details:
 
 -   **Host:** localhost
 -   **Port:** 5432
