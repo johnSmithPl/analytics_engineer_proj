@@ -1,36 +1,66 @@
-# analytics_engineer_proj
+# Analytics Engineer Project
 
-- excel .xlsx modified to .csv, delimited with ";"
-- platform: linux/amd64 in dockercompose, explain
-- docker exec -it dbt_env /bin/bash
-- i did not post data to not leak any personal information, thats why its git ignored and you have to put it there
-- picked most fresh and stable versions of postgres and dbt images source
+This project demonstrates a comprehensive data engineering and analytics workflow, from raw data ingestion to the creation of insightful
+data marts. It uses dbt to transform and model data, and Docker-compose to create a reproducible environment.
 
+## Project Structure
 
-to do:
-- provide a link with data so they dont have to convert xlsx to csv and pay attention to delmiter etc
-- clean the raw data in next layers as there are many commas etc.
+The project is organized into the following directories:
 
+- `dbt_project/`: Contains the dbt project, including models, macros, and configuration.
+- `postgres_init/`: Contains the initial data and the SQL script to load it into the PostgreSQL database.
+- `instructions/`: Contains original instructions for take home assigment and git ingored folder data.
+    Data was exported as cvs files from shared .xlsx files. They were just exported as they were, without any modifications.
+    Delimiter was set up to ";" to ommit issues with file structure. I think it's good enough solution for take home test
+    with initial data. 
+    
+    These are the needed files:
+    - `instructions/data/devices.csv`
+    - `instructions/data/stores.csv`
+    - `instructions/data/transactions.csv`
 
-# Data Loading Strategy
+## Getting Started
 
-For this project, the initial data is loaded into the PostgreSQL database using a standard init.sql script placed in the /docker-entrypoint-initdb.d directory. This is a conventional and efficient method for initializing a database with a known dataset in a development or self-contained environment.
+### Prerequisites
+- Docker
 
-For a production system, I would implement a more robust data loading mechanism, which would decouple the database startup from the data loading process, ensuring the database can start independently and providing better error handling and logging if the data ingestion were to fail.
+The docker-compose file is setup for `linux/amd64`, it works fine with MacOS M-series chip. The platform architecture is controled through 
+this attribute in the [docker-compose.yml file](docker-compose.yml):
+```
+platform: linux/amd64
+```
 
-I loaded that everything has a string because because of some data that later on I can fix in the first layers on top of raw data.
+You can find more info about it in the [official docker docs](https://docs.docker.com/reference/compose-file/services/#platform).
+It was not tested on other platforms, like windows.
 
-# dbeaver
-Host: localhost
-Port: 5432
-Database: dbt
-Username: dbt
-Password: dbt
+### Setup
 
-docker exec -it dbt_env /bin/bash
-just dbt run to run all
-dbt run --select tag:stage
-dbt run --select tag:intermediate
+1.  **Clone the repository:**
 
-TODO: data model design explanation
-TODO: Your design and implementation should scale for larger volumes of data (millions to billions of records) -> explanation of incremental
+    ```bash
+    git clone https://github.com/k-t-l/analytics_engineer_proj.git
+    cd analytics_engineer_proj
+    ```
+
+2.  **Run the Docker environment:**
+
+    ```bash
+    docker-compose up -d
+    ```
+
+    This will start a PostgreSQL database and a dbt environment.
+
+3.  **Run the dbt models:**
+
+    ```bash
+    docker exec -it dbt_env /bin/bash
+    dbt run
+    ```
+
+    This will run all the dbt models, from staging to the final data marts. If you want you can run dbt layer by layer, with tags that have were set up:
+    ```
+    dbt run --select tag:staging
+    dbt run --select tag:intermediate
+    dbt run --select tag:sales_mart
+    ```
+
