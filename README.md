@@ -137,6 +137,12 @@ The intermediate layer consists of the following models:
 -   `dim_stores`: A dimension table that contains information about the stores.
 -   `fct_transactions`: A fact table that contains the transactions. This table is materialized as an incremental model, which means that only new or updated records are processed on each run. This is a key feature for scalability, as it avoids full table scans on large datasets.
 
+**Note on `dim_products`:**
+
+A `dim_products` table was not created in the intermediate layer for architectural reasons. While it may seem intuitive to create a product dimension from the transaction data, this approach is not scalable. The `fct_transactions` table is expected to grow to billions of records, and scanning it to extract a distinct list of products would be inefficient and costly.
+
+In a production environment, the recommended approach would be to source product information from a dedicated system or an operational database. This would provide a reliable and scalable source of truth for product data, without the need to scan the entire transaction history.
+
 ### 3. Data Mart Layer
 
 The data mart layer is the final layer of the data model. It contains the aggregated and summarized data from the intermediate layer, and is designed to answer specific business questions.
@@ -150,16 +156,6 @@ The data mart layer consists of the following models:
 -   `dtm_percentage_transactions_by_device_type`: Calculates the percentage of transactions by device type.
 -   `dtm_top_10_products_sold`: Calculates the top 10 products sold.
 -   `dtm_top_10_stores_by_amount`: Calculates the top 10 stores by transacted amount.
-
-## Scalability and performance
-
-### As implemented:
-The data model leverages incremental models in the intermediate layer (e.g., fct_transactions). Each dbt run processes only new or changed rows and avoids full-table scans. In the datamart layer, models use efficient SQL patterns, like CTEs with early filtering, pre-aggregation before joins, and only necessary columns to minimize data movement and keep queries performant on growing datasets.
-
-### Future considerations:
-For the production setup, this could be improved further. However, it would heavily depend on database/warehouse technology. For PostgreSQL (as used here), this would involve indexing strategies on frequently queried columns, partitioning large tables (e.g., fct_transactions), etc. For analytical databases like Snowflake, it could mean manually defining clustering keys or relying on automatic clustering and micropartitioning. Solutions like materialized views, etc., could also be considered.
-
-On the other hand, extremely beneficial could be well-designed orchestration with tools like Airflow.
 
 ## Data Loading Strategy
 
@@ -177,6 +173,27 @@ Use the following details:
 -   **Database:** dbt
 -   **Username:** dbt
 -   **Password:** dbt
+
+## Scalability and performance
+
+### As implemented:
+The data model leverages incremental models in the intermediate layer (e.g., fct_transactions). Each dbt run processes only new or changed rows and avoids full-table scans. In the datamart layer, models use efficient SQL patterns, like CTEs with early filtering, pre-aggregation before joins, and only necessary columns to minimize data movement and keep queries performant on growing datasets.
+
+### Future considerations:
+For the production setup, this could be improved further. However, it would heavily depend on database/warehouse technology. For PostgreSQL (as used here), this would involve indexing strategies on frequently queried columns, partitioning large tables (e.g., fct_transactions), etc. For analytical databases like Snowflake, big benefit would be columnar storage by desing. However, it could also mean manually defining clustering keys or relying on automatic clustering and micropartitioning. Solutions like materialized views, etc., could also be considered.
+
+On the other hand, extremely beneficial could be well-designed orchestration with tools like Airflow.
+
+## Time constraints improvements
+The project, within given time constraints, addreses main needs, however it can be improved in many aspects. Amongst them, some ideas for further improvemetns are:
+- documentation improvements - usage of dbt docs, column level descriptions in schema.yml
+- data quality tests on each layer with more advanced test eg. using great expectations framework
+- dbt-freshness tests
+- historical records strategy (slowly changing dimensions)
+- adding CI/CD
+- separate enironments
+- introduction of data catalog with data stewards
+- etc ...
 
 ## Feedback
 
