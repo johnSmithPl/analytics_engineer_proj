@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: dtm_avg_time_to_5_transactions
+    columns:
+      - name: store_id
+        tests:
+          - not_null
+
+  - name: dtm_avg_transacted_amount_by_typology_country
+    columns:
+      - name: typology
+        tests:
+          - not_null
+      - name: country
+        tests:
+          - not_null
+
+  - name: dtm_percentage_transactions_by_device_type
+    columns:
+      - name: device_type
+        tests:
+          - not_null
+
+  - name: dtm_top_10_products_sold
+    columns:
+      - name: product_name
+        tests:
+          - not_null
+
+  - name: dtm_top_10_stores_by_amount
+    columns:
+      - name: store_id
+        tests:
+          - not_null
