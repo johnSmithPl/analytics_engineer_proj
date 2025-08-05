@@ -11,9 +11,9 @@ The project is organized into the following directories:
 
 - `dbt_project/`: Contains the dbt project, including models, macros, and configuration.
 - `postgres_init/`: Contains the initial data and the SQL script to load it into the PostgreSQL database.
-- `instructions/`: Contains original instructions for take home assigment and git ingored folder data.
-    Data was exported as CSV files from shared .xlsx files. They were just exported as they were, without any modifications.
-    Delimiter was set to ";" to omit issues with file structure. I think it's a good enough solution for a take-home test
+- `instructions/`: Contains original instructions for the take-home assignment and git-ignored folder data.
+    Data was exported as CSV files from shared .xlsx files. They were exported as they were, without any modifications.
+    The delimiter was set to ";" to avoid issues with file structure. I think it's a good enough solution for a take-home test
     with initial data. 
     
     These are the needed files:
@@ -27,14 +27,14 @@ The project is organized into the following directories:
 
 - Docker
 
-The docker-compose file is setup for `linux/amd64`, it works fine with MacOS M-series chip. The platform architecture is controled through 
+The docker-compose file is set up for `linux/amd64`, and it works fine with MacOS M-series chips. The platform architecture is controlled through 
 this attribute in the [docker-compose.yml file](docker-compose.yml):
 ```
 platform: linux/amd64
 ```
 
 You can find more info about it in the [official docker docs](https://docs.docker.com/reference/compose-file/services/#platform).
-It was not tested on other platforms, like windows.
+It was not tested on other platforms, like Windows.
 
 ### Setup
 
@@ -47,7 +47,7 @@ It was not tested on other platforms, like windows.
 
 2.  **Place prepared .csv files in the data folder:**
     Download the shared .csv files and place them in the `data` folder. If you prefer, you can also prepare them yourself, 
-    following instructions in the [Project Structure](#project-structure) section.
+    following the instructions in the [Project Structure](#project-structure) section.
 
     ```
     instructions/data/devices.csv
@@ -70,7 +70,7 @@ It was not tested on other platforms, like windows.
     dbt run
     ```
 
-    This will run all the dbt models, from staging to the final data marts. If you want you can run dbt layer by layer, with tags that have were set up:
+    This will run all the dbt models, from staging to the final data marts. If you want, you can run dbt layer by layer, with the tags that were set up:
     ```
     dbt run --select tag:staging
     dbt run --select tag:intermediate
@@ -90,7 +90,7 @@ It was not tested on other platforms, like windows.
 
 5.  **Docker images:**
 
-    The Docker images in the `docker-compose.yml` file are chosen to be the most recent stable lightweight versions.
+    The Docker images in the `docker-compose.yml` file are chosen to be the most recent stable, lightweight versions.
 
 ## Architecture
 
@@ -152,7 +152,7 @@ The data mart layer consists of the following models:
 -   `dtm_avg_transacted_amount_by_typology_country`: Calculates the average transacted amount by store typology and country.
 -   `dtm_avg_time_to_5_transactions`: Calculates the average time it takes for a store to have its first 5 transactions.
 -   `dtm_overall_avg_time_to_5_transactions`: Calculates the overall average time it takes for a store to have its first 5 transactions.
-        Instructions were a bit ambiguous about granularity of result for `dtm_avg_time_to_5_transactions`, so this one is included just in case for overall summary. As it was very easy to build.
+        The instructions were a bit ambiguous about the granularity of the result for `dtm_avg_time_to_5_transactions`, so this one is included just in case for an overall summary, as it was very easy to build.
 -   `dtm_percentage_transactions_by_device_type`: Calculates the percentage of transactions by device type.
 -   `dtm_top_10_products_sold`: Calculates the top 10 products sold.
 -   `dtm_top_10_stores_by_amount`: Calculates the top 10 stores by transacted amount.
@@ -161,11 +161,11 @@ The data mart layer consists of the following models:
 
 The initial data is loaded into the PostgreSQL database using a standard `init.sql` script placed in the `/docker-entrypoint-initdb.d` directory. This is a conventional and efficient method for initializing a database with a known dataset in a development or self-contained environment.
 
-For a production system, a more robust data loading mechanism would be implemented, which would decouple the database startup from the data loading process, ensuring the database can start independently and providing better error handling and logging if the data ingestion were to fail.
+For a production system, a more robust data loading mechanism would be implemented, which would decouple the database startup from the data loading process, ensuring the database can start independently and provide better error handling and logging if the data ingestion were to fail.
 
 ## Database viewer
 
-If you'd like to view the results, you can do so by configuring a DB connection in your database viewer tool of preference. For example, DBeaver.
+If you'd like to view the results, you can do so by configuring a DB connection in your preferred database viewer tool. For example, DBeaver.
 Use the following details:
 
 -   **Host:** localhost
@@ -177,22 +177,22 @@ Use the following details:
 ## Scalability and performance
 
 ### As implemented:
-The data model leverages incremental models in the intermediate layer (e.g., fct_transactions). Each dbt run processes only new or changed rows and avoids full-table scans. In the datamart layer, models use efficient SQL patterns, like CTEs with early filtering, pre-aggregation before joins, and only necessary columns to minimize data movement and keep queries performant on growing datasets.
+The data model leverages incremental models in the intermediate layer (e.g., fct_transactions). Each dbt run processes only new or changed rows and avoids full-table scans. In the datamart layer, models use efficient SQL patterns, like CTEs with early filtering, pre-aggregation before joins, and only necessary columns to minimize data movement and keep queries performant as datasets grow.
 
 ### Future considerations:
-For the production setup, this could be improved further. However, it would heavily depend on database/warehouse technology. For PostgreSQL (as used here), this would involve indexing strategies on frequently queried columns, partitioning large tables (e.g., fct_transactions), etc. For analytical databases like Snowflake, big benefit would be columnar storage by desing. However, it could also mean manually defining clustering keys or relying on automatic clustering and micropartitioning. Solutions like materialized views, etc., could also be considered.
+For the production setup, this could be improved further. However, it would heavily depend on the database/warehouse technology. For PostgreSQL (as used here), this would involve indexing strategies on frequently queried columns, partitioning large tables (e.g., fct_transactions), etc. For analytical databases like Snowflake, a big benefit would be columnar storage by design. However, it could also mean manually defining clustering keys or relying on automatic clustering and micropartitioning. Solutions like materialized views, etc., could also be considered.
 
-On the other hand, extremely beneficial could be well-designed orchestration with tools like Airflow.
+On the other hand, a well-designed orchestration with tools like Airflow could be extremely beneficial.
 
 ## Time constraints improvements
-The project, within given time constraints, addreses main needs, however it can be improved in many aspects. Amongst them, some ideas for further improvemetns are:
-- documentation improvements - usage of dbt docs, column level descriptions in schema.yml
-- data quality tests on each layer with more advanced test eg. using great expectations framework
-- dbt-freshness tests
+The project, within the given time constraints, addresses the main needs; however, it can be improved in many aspects. Among them, some ideas for further improvements are:
+- documentation improvements - usage of dbt docs, column-level descriptions in schema.yml
+- data quality tests on each layer with more advanced tests, e.g., using the Great Expectations framework
+- dbt freshness tests
 - historical records strategy (slowly changing dimensions)
 - adding CI/CD
-- separate enironments
-- introduction of data catalog with data stewards
+- separate environments
+- introduction of a data catalog with data stewards
 - generation of surrogate keys
 - etc ...
 
