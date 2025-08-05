@@ -193,6 +193,7 @@ The project, within given time constraints, addreses main needs, however it can 
 - adding CI/CD
 - separate enironments
 - introduction of data catalog with data stewards
+- generation of surrogate keys
 - etc ...
 
 ## Feedback

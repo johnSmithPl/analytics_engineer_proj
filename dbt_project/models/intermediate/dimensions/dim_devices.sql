@@ -1,7 +1,15 @@
 {{ config(tags=["intermediate"]) }}
 
 with devices as (
-    select * from {{ ref('stg_devices') }}
+    select
+        device_id,
+        device_type,
+        store_id
+    from {{ ref('stg_devices') }}
 )
 
-select * from devices
+select
+    device_id,
+    device_type,
+    store_id
+from devices
